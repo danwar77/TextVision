@@ -18,7 +18,19 @@ package com.google.cloud.vision.samples.text;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.LowLevelHttpRequest;
+import com.google.api.client.http.LowLevelHttpResponse;
+import com.google.api.client.json.Json;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.testing.http.MockHttpTransport;
+import com.google.api.client.testing.http.MockLowLevelHttpRequest;
+import com.google.api.client.testing.http.MockLowLevelHttpResponse;
+import com.google.api.services.vision.v1.Vision;
 import com.google.common.collect.ImmutableList;
+
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -36,23 +48,46 @@ public class TextAppIT {
   private TextApp appUnderTest;
 
   @Before public void setUp() throws Exception {
+	  
+	  JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+	    HttpTransport transport = new MockHttpTransport() {
+	      @Override
+	      public LowLevelHttpRequest buildRequest(String method, String url) throws IOException {
+	        return new MockLowLevelHttpRequest() {
+	          @Override
+	          public LowLevelHttpResponse execute() throws IOException {
+	            MockLowLevelHttpResponse response = new MockLowLevelHttpResponse();
+	            response.setStatusCode(200);
+	            response.setContentType(Json.MEDIA_TYPE);
+	            response.setContent("{\"responses\": [{\"textAnnotations\": []}]}");
+	            return response;
+	          }
+	        };
+	      }
+	    };
+	 //   Vision vision = new Vision(transport, jsonFactory, null);
+	  
     appUnderTest = new TextApp(TextApp.getVisionService(), null /* index */);
+    
+	 //   appUnderTest = new TextApp(vision, null /* index */);
   }
 
   @Test public void extractDescriptions_withImage_returnsText() throws Exception {
     // Arrange
     List<ImageText> image =
-        appUnderTest.detectText(ImmutableList.<Path>of(Paths.get("data/wakeupcat.jpg")));
+        appUnderTest.detectText(ImmutableList.<Path>of(Paths.get("data\\bonito.gif")));
 
-    // Act
+    // Act 
+    
     Word word = appUnderTest.extractDescriptions(image.get(0));
+    System.out.println("sd:" + image.get(0).textAnnotations());
 
     // Assert
-    assertWithMessage("wakeupcat.jpg path")
+    assertWithMessage("bonito.gif path")
         .that(word.path().toString())
-        .isEqualTo("data/wakeupcat.jpg");
-    assertWithMessage("wakeupcat.jpg word").that(word.word().toLowerCase()).contains("wake");
-    assertWithMessage("wakeupcat.jpg word").that(word.word().toLowerCase()).contains("up");
-    assertWithMessage("wakeupcat.jpg word").that(word.word().toLowerCase()).contains("human");
+        .isEqualTo("data\\mountain.jpg");
+    assertWithMessage("mountain.jpg word").that(word.word().toLowerCase()).contains("mountain");
+//    assertWithMessage("wakeupcat.jpg word").that(word.word().toLowerCase()).contains("up");
+//    assertWithMessage("wakeupcat.jpg word").that(word.word().toLowerCase()).contains("human");
   }
 }

@@ -30,9 +30,6 @@ import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.google.api.services.vision.v1.model.Status;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -68,32 +65,33 @@ public class TextApp {
   /**
    * Connects to the Vision API using Application Default Credentials.
    */
+//  public static Vision getVisionService() throws IOException, GeneralSecurityException {
+//
+//     
+//	    String  jsonPath = "C:\\Credential\\CredentialGCLOUD.json";
+//	    GoogleCredentials credentials = null;
+//		try {
+//			credentials = GoogleCredentials.fromStream(new FileInputStream(jsonPath))
+//	        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+//			   Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		 
+//    
+//
+//  }
+
   public static Vision getVisionService() throws IOException, GeneralSecurityException {
-
-     
-	    String  jsonPath = "C:\\Credential\\CredentialGCLOUD.json";
-	    GoogleCredentials credentials = null;
-		try {
-			credentials = GoogleCredentials.fromStream(new FileInputStream(jsonPath))
-	        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
-			   Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	    GoogleCredential credential =
-	            GoogleCredential.getApplicationDefault().createScoped(VisionScopes.all());
-    
-    JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-    //new Vision.Builder(transport, jsonFactory, httpRequestInitializer)
-    return new Vision.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, credential)
-            .setApplicationName(APPLICATION_NAME)
-            .build();
-    
-
-  }
-
+	  GoogleCredential credential =
+	    GoogleCredential.getApplicationDefault().createScoped(VisionScopes.all());
+	  JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+	  return new Vision.Builder(GoogleNetHttpTransport.newTrustedTransport(), jsonFactory, credential)
+	      .setApplicationName(APPLICATION_NAME)
+	      .build();
+	 }
    
   
   /**

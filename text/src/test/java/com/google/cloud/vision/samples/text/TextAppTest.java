@@ -70,10 +70,10 @@ public class TextAppTest {
 
   @Test public void detectText_withImage_returnsPath() throws Exception {
     List<ImageText> image =
-        appUnderTest.detectText(ImmutableList.<Path>of(Paths.get("data/wakeupcat.jpg")));
+        appUnderTest.detectText(ImmutableList.<Path>of(Paths.get("data\\not-a-meme.txt")));
 
     assertWithMessage("wakeupcat.jpg path")
         .that(image.get(0).path().toString())
-        .isEqualTo("data/wakeupcat.jpg");
+        .isEqualTo("data\\wakeupcat.jpg");
   }
 }
